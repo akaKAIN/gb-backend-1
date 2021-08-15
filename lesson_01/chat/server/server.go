@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"os"
@@ -50,6 +51,16 @@ func GetUserName(conn *net.Conn) string {
 		log.Println(err)
 	}
 	buf := make([]byte, 4)
+	for {
+		n, err := (*conn).Read(buf)
+		if err != nil {
+			log.Println("Err:", err)
+		}
+		if n != 0 || err == io.EOF {
+			log.Println("N", n, err)
+			break
+		}
+	}
 
 	log.Println("DONE", string(buf))
 	return string(buf)

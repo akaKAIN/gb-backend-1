@@ -102,7 +102,7 @@ func (chat *Chat) StartListening(ctx context.Context) {
 	for {
 		select {
 		case <-ctx.Done():
-			break
+			return
 		case message := <-chat.Channels.entering:
 			chat.broadcast(message)
 		case message := <-chat.Channels.leaving:

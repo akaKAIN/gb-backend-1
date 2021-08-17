@@ -40,9 +40,13 @@ func StartChat(chat *models.Chat) {
 }
 
 func HandleConnection(ctx context.Context, cancel context.CancelFunc, chat *models.Chat, conn *net.Conn) {
-	userName := GetUserName(conn)
-	chat.AddUser(conn, userName)
-	log.Println(userName)
+	//userName := GetUserName(conn)
+	buf := make([]byte, 256)
+	if _, err := (*conn).Read(buf); err != nil {
+		log.Println(err)
+	}
+	chat.AddUser(conn, string(buf))
+	log.Println("DONE")
 }
 
 // GetUserName Получение имени пользователя
@@ -67,7 +71,7 @@ func GetUserName(conn *net.Conn) string {
 }
 
 func shutdownListen(cancel context.CancelFunc, ch chan os.Signal) {
-	signal.Notify(ch, syscall.SIGINT, syscall.SIGKILL)
+	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
 	<-ch
 	cancel()
 }

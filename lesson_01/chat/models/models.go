@@ -83,7 +83,7 @@ func (chat *Chat) DeleteUser(conn *net.Conn) {
 
 // Рассылка сообщения по всем активным пользователям
 func (chat *Chat) broadcast(msg string) {
-	for user := range chat.Users {
+	for user, _ := range chat.Users {
 		if _, err := fmt.Fprint(*user, msg); err != nil {
 			log.Println("broadcasting error:", err)
 		}

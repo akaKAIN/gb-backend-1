@@ -45,8 +45,26 @@ func HandleConnection(ctx context.Context, cancel context.CancelFunc, chat *mode
 	if _, err := (*conn).Read(buf); err != nil {
 		log.Println(err)
 	}
-	chat.AddUser(conn, string(buf))
-	log.Println("DONE")
+	name := string(buf)
+	log.Println("name is ->", name)
+	chat.AddUser(conn, name)
+	chat.Channels.Enter(name)
+	defer chat.Channels.Leave(name)
+	for {
+		_, err := (*conn).Read(buf)
+		if err != nil {
+			if err == io.EOF {
+				break
+			} else {
+				log.Println(err)
+			}
+		}
+		if _, err := fmt.Fprintf(os.Stdout, "%s: %s\n", name, string(buf)); err != nil {
+			log.Println(err)
+			break
+		}
+	}
+
 }
 
 // GetUserName Получение имени пользователя

@@ -1,0 +1,107 @@
+openapi: 3.0.1
+info:
+  title: Short link creater
+  description: Small service for make your url to shorter
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  contact:
+    email: mkain@mail.ru
+  version: 1.0.0
+servers:
+  - description: Production service
+    url: https://backend-linkmaker.com/
+
+paths:
+  /short:
+    get:
+      tags:
+        - short
+      summary: Make link shorter
+      operationId: shortLink
+      parameters:
+        - name: url
+          in: query
+          description: long url value
+          required: true
+          schema:
+            type: string
+      responses:
+        201:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ShortUrl'
+        200:
+          description: Short url already existing
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ShortUrl'
+
+  /go/short_url:
+    get:
+      tags:
+        - full
+      summary: Return full url
+      operationId: fullUrl
+      responses:
+        301:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/FullUrl'
+
+        404:
+          description: url not exist
+  /all:
+    get:
+      tags:
+        - all
+      summary: Get list with all short urls
+      operationId: list
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Url'
+components:
+  schemas:
+    Url:
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          $ref: '#/components/schemas/FullUrl'
+        short_url:
+          $ref: '#/components/schemas/ShortUrl'
+        visited:
+          type: integer
+          format: int64
+
+
+    ShortUrl:
+      type: object
+      properties:
+        id:
+          type: string
+        short_url:
+          type: string
+
+    FullUrl:
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          type: string
